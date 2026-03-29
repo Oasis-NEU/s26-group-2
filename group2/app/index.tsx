@@ -1,18 +1,22 @@
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
+  KeyboardAvoidingView,
   Linking,
+  Modal,
+  Platform,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const MOODS = [
+export const MOODS = [
   { emoji: '😄', label: 'Great' },
   { emoji: '😊', label: 'Good' },
   { emoji: '😐', label: 'Okay' },
@@ -58,11 +62,76 @@ const ARTICLES = [
 
 export default function HomeScreen() {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState('home');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [journalText, setJournalText] = useState('');
+  const [pendingMood, setPendingMood] = useState<number | null>(null);
+
+  const handleMoodPress = (index: number) => {
+    setPendingMood(index);
+    setJournalText('');
+    setModalVisible(true);
+  };
+
+  const handleSave = () => {
+    if (pendingMood !== null) setSelectedMood(pendingMood);
+    setModalVisible(false);
+  };
+
+  const handleClose = () => {
+    setModalVisible(false);
+    setPendingMood(null);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
+
+      {/* Mood Journal Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={handleClose}
+      >
+        <Pressable style={styles.overlay} onPress={handleClose}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <Pressable style={styles.modalCard} onPress={() => {}}>
+              {pendingMood !== null && (
+                <Text style={styles.modalEmoji}>{MOODS[pendingMood].emoji}</Text>
+              )}
+              <Text style={styles.modalTitle}>
+                {pendingMood !== null ? MOODS[pendingMood].label : ''}
+              </Text>
+              <Text style={styles.modalSubtitle}>Want to share what's on your mind?</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Write your thoughts here..."
+                placeholderTextColor="#AABBD0"
+                multiline
+                numberOfLines={5}
+                textAlignVertical="top"
+                value={journalText}
+                onChangeText={setJournalText}
+              />
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={handleClose}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={handleSave}
+                >
+                  <Text style={styles.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
+          </KeyboardAvoidingView>
+        </Pressable>
+      </Modal>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -79,7 +148,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Divider */}
         <View style={styles.divider} />
 
         {/* Mood Checker */}
@@ -90,7 +158,7 @@ export default function HomeScreen() {
               <TouchableOpacity
                 key={i}
                 style={[styles.moodButton, selectedMood === i && styles.moodButtonSelected]}
-                onPress={() => setSelectedMood(i)}
+                onPress={() => handleMoodPress(i)}
               >
                 <Text style={styles.moodEmoji}>{mood.emoji}</Text>
                 <Text style={[styles.moodLabel, selectedMood === i && styles.moodLabelSelected]}>
@@ -140,23 +208,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      {/* Bottom Tab Bar */}
-      <View style={styles.tabBar}>
-        {[
-          { key: 'home', icon: '🏠' },
-          { key: 'search', icon: '🔍' },
-          { key: 'chat', icon: '💬' },
-          { key: 'profile', icon: '👤' },
-        ].map(t => (
-          <TouchableOpacity key={t.key} style={styles.tabItem} onPress={() => setActiveTab(t.key)}>
-            <Text style={[styles.tabIcon, activeTab === t.key && styles.tabIconActive]}>
-              {t.icon}
-            </Text>
-            {activeTab === t.key && <View style={styles.tabDot} />}
-          </TouchableOpacity>
-        ))}
-      </View>
     </SafeAreaView>
   );
 }
@@ -166,7 +217,6 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { paddingHorizontal: 22, paddingBottom: 24 },
 
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -200,7 +250,6 @@ const styles = StyleSheet.create({
 
   divider: { height: 1, backgroundColor: '#DDE8F0', marginBottom: 20 },
 
-  // Mood
   moodCard: {
     backgroundColor: '#fff',
     borderRadius: 18,
@@ -212,16 +261,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 2,
   },
-  moodTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1A3A52',
-    marginBottom: 16,
-  },
-  moodRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  moodTitle: { fontSize: 15, fontWeight: '600', color: '#1A3A52', marginBottom: 16 },
+  moodRow: { flexDirection: 'row', justifyContent: 'space-between' },
   moodButton: {
     alignItems: 'center',
     paddingVertical: 8,
@@ -231,23 +272,53 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     minWidth: 54,
   },
-  moodButtonSelected: {
-    backgroundColor: '#EBF3FB',
-    borderColor: '#2E86C1',
-  },
+  moodButtonSelected: { backgroundColor: '#EBF3FB', borderColor: '#2E86C1' },
   moodEmoji: { fontSize: 30 },
   moodLabel: { fontSize: 11, color: '#A0B4C5', marginTop: 4, fontWeight: '500' },
   moodLabelSelected: { color: '#2E86C1' },
 
-  // Section heading
-  sectionHeading: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#1A3A52',
-    marginBottom: 14,
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(232, 241, 248, 0.92)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
   },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 24,
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: '#1A5276',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  modalEmoji: { fontSize: 50, marginBottom: 6 },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: '#1A3A52', marginBottom: 4 },
+  modalSubtitle: { fontSize: 13, color: '#7F8C8D', marginBottom: 16, textAlign: 'center' },
+  modalInput: {
+    width: '100%',
+    minHeight: 120,
+    backgroundColor: '#EBF5FB',
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 13,
+    color: '#2C3E50',
+    borderWidth: 1,
+    borderColor: '#AED6F1',
+  },
+  buttonRow: { flexDirection: 'row', marginTop: 18, gap: 12, width: '100%' },
+  modalButton: { flex: 1, paddingVertical: 12, borderRadius: 14, alignItems: 'center' },
+  cancelButton: { backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
+  cancelButtonText: { color: '#5B7FA5', fontWeight: '600', fontSize: 15 },
+  saveButton: { backgroundColor: '#2E86C1' },
+  saveButtonText: { color: '#fff', fontWeight: '600', fontSize: 15 },
 
-  // Categories
+  sectionHeading: { fontSize: 17, fontWeight: '700', color: '#1A3A52', marginBottom: 14 },
+
   categoryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -267,14 +338,8 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   categoryEmoji: { fontSize: 28 },
-  categoryLabel: {
-    fontSize: 12,
-    color: '#4A6FA5',
-    fontWeight: '600',
-    marginTop: 8,
-  },
+  categoryLabel: { fontSize: 12, color: '#4A6FA5', fontWeight: '600', marginTop: 8 },
 
-  // Articles
   articleCard: {
     borderRadius: 18,
     padding: 20,
@@ -291,32 +356,17 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     marginBottom: 8,
   },
-  articleTagText: { fontSize: 10, color: '#fff', fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' },
+  articleTagText: {
+    fontSize: 10,
+    color: '#fff',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
   articleTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6, lineHeight: 22 },
   articleSubtitle: { fontSize: 13, color: '#5A7080', lineHeight: 18, marginBottom: 12 },
   readMoreRow: { flexDirection: 'row', alignItems: 'center' },
   readMore: { fontSize: 13, fontWeight: '600' },
   readMoreArrow: { fontSize: 14, fontWeight: '600' },
   articleEmoji: { fontSize: 44 },
-
-  // Tab Bar
-  tabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E4EEF5',
-  },
-  tabItem: { alignItems: 'center', paddingHorizontal: 20 },
-  tabIcon: { fontSize: 24, opacity: 0.3 },
-  tabIconActive: { opacity: 1 },
-  tabDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#2E86C1',
-    marginTop: 4,
-  },
 });
