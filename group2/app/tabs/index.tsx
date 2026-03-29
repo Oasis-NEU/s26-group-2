@@ -1,5 +1,7 @@
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Linking,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -10,17 +12,47 @@ import {
 } from 'react-native';
 
 const MOODS = [
-  { emoji: '😄', label: 'I am feeling good' },
+  { emoji: '😄', label: 'Great' },
   { emoji: '😊', label: 'Good' },
   { emoji: '😐', label: 'Okay' },
-  { emoji: '😟', label: 'Bad' },
+  { emoji: '😟', label: 'Low' },
   { emoji: '😢', label: 'Awful' },
 ];
 
 const CATEGORIES = [
-  { emoji: '🎮', label: 'Games', color: '#D5E8D0' },
-  { emoji: '🧘', label: 'Meditations', color: '#D5E8D0' },
-  { emoji: '📚', label: 'Resources', color: '#D5E8D0' },
+  { emoji: '🎮', label: 'Games' },
+  { emoji: '🧘', label: 'Meditate' },
+  { emoji: '📚', label: 'Resources' },
+];
+
+const ARTICLES = [
+  {
+    tag: 'Games & Cognition',
+    title: 'How Tetris Helps in Times of Distress',
+    subtitle: 'Research shows Tetris can reduce intrusive thoughts and PTSD symptoms.',
+    emoji: '🧩',
+    url: 'https://www.psychologytoday.com/us/blog/what-mentally-strong-people-dont-do/202502/how-tetris-might-help-prevent-ptsd',
+    bg: '#EBF3FB',
+    accent: '#1A5276',
+  },
+  {
+    tag: 'Mindfulness',
+    title: 'The Science of Meditation',
+    subtitle: 'Evidence-based techniques to reduce stress and improve focus.',
+    emoji: '🧘',
+    url: 'https://www.healthline.com/nutrition/12-benefits-of-meditation',
+    bg: '#EAF4F4',
+    accent: '#117A65',
+  },
+  {
+    tag: 'Mental Health',
+    title: 'Additional Resources',
+    subtitle: 'Vetted tools, hotlines, and guides for your mental health journey.',
+    emoji: '💙',
+    url: 'https://www.healthline.com/health/mental-health-resources#emergency-help',
+    bg: '#F0EBF8',
+    accent: '#6C3483',
+  },
 ];
 
 export default function HomeScreen() {
@@ -37,359 +69,234 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>WELCOME TO SERENITY !</Text>
+          <View>
+            <Text style={styles.headerEyebrow}>Good morning</Text>
+            <Text style={styles.headerTitle}>Serenity</Text>
+          </View>
           <TouchableOpacity style={styles.bellButton}>
-            <Text style={{ fontSize: 22 }}>🔔</Text>
+            <Text style={{ fontSize: 20 }}>🔔</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Divider */}
+        <View style={styles.divider} />
+
         {/* Mood Checker */}
         <View style={styles.moodCard}>
-          <Text style={styles.moodTitle}>HOW ARE YOU FEELING TODAY ?</Text>
+          <Text style={styles.moodTitle}>How are you feeling today?</Text>
           <View style={styles.moodRow}>
-            {MOODS.map((mood, index) => (
+            {MOODS.map((mood, i) => (
               <TouchableOpacity
-                key={index}
-                style={[
-                  styles.moodButton,
-                  selectedMood === index && styles.moodButtonSelected,
-                ]}
-                onPress={() => setSelectedMood(index)}
+                key={i}
+                style={[styles.moodButton, selectedMood === i && styles.moodButtonSelected]}
+                onPress={() => setSelectedMood(i)}
               >
                 <Text style={styles.moodEmoji}>{mood.emoji}</Text>
+                <Text style={[styles.moodLabel, selectedMood === i && styles.moodLabelSelected]}>
+                  {mood.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        {/* Category Cards */}
+        {/* Categories */}
+        <Text style={styles.sectionHeading}>Explore</Text>
         <View style={styles.categoryRow}>
-          {CATEGORIES.map((cat, index) => (
-            <TouchableOpacity key={index} style={styles.categoryCard}>
-              <View style={styles.categoryIconContainer}>
-                <Text style={{ fontSize: 36 }}>{cat.emoji}</Text>
-              </View>
+          {CATEGORIES.map((cat, i) => (
+            <TouchableOpacity
+              key={i}
+              style={styles.categoryCard}
+              onPress={() => cat.label === 'Games' && router.push('/tabs/explore')}
+            >
+              <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
               <Text style={styles.categoryLabel}>{cat.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Mindfulness Section */}
-        <Text style={styles.sectionText}>
-          Learn More About The Benefits of Tetris In Times of Distress
-        </Text>
-
-        <View style={styles.mindfulnessCard}>
-          <View style={styles.mindfulnessContent}>
-            <Text style={styles.mindfulnessTitle}>
-              Learn More About The Benefits of Tetris in Times of Distress
-            </Text>
-            <Text style={styles.mindfulnessSubtitle}>
-              And play it here!
-            </Text>
-            <TouchableOpacity style={styles.articleButton}>
-              <Text style={styles.articleButtonText}>Learn more!</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.cardImage}>
-            <Text style={{ fontSize: 44 }}>🧠</Text>
-          </View>
-        </View>
-
-        {/* Mental Health Check */}
-        <Text style={styles.sectionText}>
-          Learn about the benefits of Meditation
-        </Text>
-
-        <View style={styles.mindfulnessCard}>
-          <View style={styles.mindfulnessContent}>
-            <Text style={styles.mindfulnessTitle}>
-              Learn about mindfullness and meditation techniques 
-            </Text>
-            <Text style={styles.mindfulnessSubtitle}>
-              And begin your practice here!
-            </Text>
-            <TouchableOpacity style={styles.articleButton}>
-              <Text style={styles.articleButtonText}>Learn more!</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.cardImage}>
-            <Text style={{ fontSize: 44 }}>🧠</Text>
-          </View>
-        </View>
-
-        {/* Sleep Meditation */}
-        <Text style={styles.sectionText}>
-          Additional Resources for your mental health journey
-        </Text>
-
-        <View style={styles.sleepCard}>
-          <View style={styles.sleepContent}>
-            <Text style={styles.sleepTitle}>
-              Read About More Resources Here For Your Mental Health Journey
-            </Text>
-          </View>
-          <View style={styles.sleepRight}>
-            <Text style={{ fontSize: 50 }}>🕐</Text>
-            <TouchableOpacity style={styles.playButton}>
-              <Text style={styles.playButtonText}>▶ Putar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        {/* Articles */}
+        <Text style={styles.sectionHeading}>Learn & Grow</Text>
+        {ARTICLES.map((a, i) => (
+          <TouchableOpacity
+            key={i}
+            style={[styles.articleCard, { backgroundColor: a.bg }]}
+            onPress={() => Linking.openURL(a.url)}
+            activeOpacity={0.85}
+          >
+            <View style={styles.articleLeft}>
+              <View style={[styles.articleTag, { backgroundColor: a.accent }]}>
+                <Text style={styles.articleTagText}>{a.tag}</Text>
+              </View>
+              <Text style={[styles.articleTitle, { color: a.accent }]}>{a.title}</Text>
+              <Text style={styles.articleSubtitle}>{a.subtitle}</Text>
+              <View style={styles.readMoreRow}>
+                <Text style={[styles.readMore, { color: a.accent }]}>Read more</Text>
+                <Text style={[styles.readMoreArrow, { color: a.accent }]}> →</Text>
+              </View>
+            </View>
+            <Text style={styles.articleEmoji}>{a.emoji}</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       {/* Bottom Tab Bar */}
       <View style={styles.tabBar}>
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab('home')}
-        >
-          <Text style={[styles.tabIcon, activeTab === 'home' && styles.tabIconActive]}>
-            🏠
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab('search')}
-        >
-          <Text style={[styles.tabIcon, activeTab === 'search' && styles.tabIconActive]}>
-            🔍
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab('chat')}
-        >
-          <Text style={[styles.tabIcon, activeTab === 'chat' && styles.tabIconActive]}>
-            💬
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab('profile')}
-        >
-          <Text style={[styles.tabIcon, activeTab === 'profile' && styles.tabIconActive]}>
-            👤
-          </Text>
-        </TouchableOpacity>
+        {[
+          { key: 'home', icon: '🏠' },
+          { key: 'search', icon: '🔍' },
+          { key: 'chat', icon: '💬' },
+          { key: 'profile', icon: '👤' },
+        ].map(t => (
+          <TouchableOpacity key={t.key} style={styles.tabItem} onPress={() => setActiveTab(t.key)}>
+            <Text style={[styles.tabIcon, activeTab === t.key && styles.tabIconActive]}>
+              {t.icon}
+            </Text>
+            {activeTab === t.key && <View style={styles.tabDot} />}
+          </TouchableOpacity>
+        ))}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E8F1F8',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
+  container: { flex: 1, backgroundColor: '#F4F8FB' },
+  scrollView: { flex: 1 },
+  scrollContent: { paddingHorizontal: 22, paddingBottom: 24 },
 
   // Header
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  headerEyebrow: {
+    fontSize: 13,
+    color: '#7FB3D3',
+    fontWeight: '500',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '700',
-    color: '#1A5276',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    fontFamily: 'Georgia'
+    color: '#1A3A52',
+    letterSpacing: -0.5,
   },
   bellButton: {
-    padding: 4,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 10,
+    shadowColor: '#1A5276',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
 
-  // Mood Card
+  divider: { height: 1, backgroundColor: '#DDE8F0', marginBottom: 20 },
+
+  // Mood
   moodCard: {
-    backgroundColor: '#D4E6F1',
-    borderRadius: 20,
+    backgroundColor: '#fff',
+    borderRadius: 18,
     padding: 20,
-    marginTop: 12,
-    alignItems: 'center',
+    marginBottom: 28,
+    shadowColor: '#1A5276',
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
   },
   moodTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#64735b',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1A3A52',
     marginBottom: 16,
-    letterSpacing: 0.5,
   },
   moodRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
   },
   moodButton: {
     alignItems: 'center',
-    padding: 8,
-    borderRadius: 50,
-    borderWidth: 2,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    borderRadius: 14,
+    borderWidth: 1.5,
     borderColor: 'transparent',
+    minWidth: 54,
   },
   moodButtonSelected: {
-    backgroundColor: '#D48263',
-    borderColor: '#D48263',
+    backgroundColor: '#EBF3FB',
+    borderColor: '#2E86C1',
   },
-  moodEmoji: {
-    fontSize: 40,
+  moodEmoji: { fontSize: 30 },
+  moodLabel: { fontSize: 11, color: '#A0B4C5', marginTop: 4, fontWeight: '500' },
+  moodLabelSelected: { color: '#2E86C1' },
+
+  // Section heading
+  sectionHeading: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1A3A52',
+    marginBottom: 14,
   },
 
   // Categories
   categoryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginBottom: 28,
+    gap: 12,
   },
   categoryCard: {
-    alignItems: 'center',
-    width: '30%',
-  },
-  categoryIconContainer: {
-    backgroundColor: '#EBF5FB',
-    borderRadius: 16,
-    width: 80,
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  categoryLabel: {
-    fontSize: 13,
-    color: '#555',
-    marginTop: 8,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-
-  // Section Text
-  sectionText: {
-    fontSize: 13,
-    color: '#5B7FA5',
-    marginTop: 24,
-    marginBottom: 12,
-    fontWeight: '500',
-  },
-
-  // Mindfulness Card
-  mindfulnessCard: {
-    backgroundColor: '#FDEEF4',
-    borderRadius: 18,
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  mindfulnessContent: {
     flex: 1,
-  },
-  mindfulnessTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#DB7093',
-  },
-  mindfulnessSubtitle: {
-    fontSize: 14,
-    color: '#DB7093',
-    marginTop: 4,
-  },
-  articleButton: {
-    backgroundColor: '#DB7093',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    alignSelf: 'flex-start',
-    marginTop: 12,
-  },
-  articleButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 13,
-  },
-  cardImage: {
-    width: 70,
-    height: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  // Mental Health Card
-  mentalHealthCard: {
-    backgroundColor: '#FEF5E7',
-    borderRadius: 18,
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  mentalHealthContent: {
-    flex: 1,
-  },
-  mentalHealthTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  testButton: {
-    backgroundColor: '#7CB342',
-    borderRadius: 25,
-    paddingHorizontal: 40,
-    paddingVertical: 10,
-    alignSelf: 'flex-start',
-    marginTop: 12,
-  },
-  testButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-
-  // Sleep Card
-  sleepCard: {
-    backgroundColor: '#F5EEF8',
-    borderRadius: 18,
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  sleepContent: {
-    flex: 1,
-  },
-  sleepTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#333',
-  },
-  sleepRight: {
-    alignItems: 'center',
-  },
-  playButton: {
     backgroundColor: '#fff',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    borderRadius: 16,
+    paddingVertical: 18,
+    alignItems: 'center',
+    shadowColor: '#1A5276',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  categoryEmoji: { fontSize: 28 },
+  categoryLabel: {
+    fontSize: 12,
+    color: '#4A6FA5',
+    fontWeight: '600',
     marginTop: 8,
+  },
+
+  // Articles
+  articleCard: {
+    borderRadius: 18,
+    padding: 20,
+    marginBottom: 14,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  playButtonText: {
-    color: '#C62828',
-    fontWeight: '600',
-    fontSize: 13,
+  articleLeft: { flex: 1, paddingRight: 12 },
+  articleTag: {
+    alignSelf: 'flex-start',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginBottom: 8,
   },
+  articleTagText: { fontSize: 10, color: '#fff', fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' },
+  articleTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6, lineHeight: 22 },
+  articleSubtitle: { fontSize: 13, color: '#5A7080', lineHeight: 18, marginBottom: 12 },
+  readMoreRow: { flexDirection: 'row', alignItems: 'center' },
+  readMore: { fontSize: 13, fontWeight: '600' },
+  readMoreArrow: { fontSize: 14, fontWeight: '600' },
+  articleEmoji: { fontSize: 44 },
 
   // Tab Bar
   tabBar: {
@@ -397,19 +304,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#fff',
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E8E8E8',
+    borderTopColor: '#E4EEF5',
   },
-  tabItem: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  tabIcon: {
-    fontSize: 26,
-    opacity: 0.4,
-  },
-  tabIconActive: {
-    opacity: 1,
+  tabItem: { alignItems: 'center', paddingHorizontal: 20 },
+  tabIcon: { fontSize: 24, opacity: 0.3 },
+  tabIconActive: { opacity: 1 },
+  tabDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#2E86C1',
+    marginTop: 4,
   },
 });
