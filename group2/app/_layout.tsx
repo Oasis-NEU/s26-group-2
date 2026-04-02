@@ -1,60 +1,24 @@
-import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { useEffect } from 'react';
+import { Slot, useRouter } from 'expo-router';
+import { supabase } from '../lib/supabase';
 
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return (
-    <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.4 }}>{emoji}</Text>
-  );
-}
+export default function RootLayout() {
+  const router = useRouter();
 
-export default function TabLayout() {
-  return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#2E86C1',
-        tabBarInactiveTintColor: '#A0B4C5',
-        tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#E4EEF5',
-          borderTopWidth: 1,
-          paddingTop: 4,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          marginBottom: 2,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: 'Chat',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="💬" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
-        }}
-      />
-    </Tabs>
-  );
+  useEffect(() => {
+    // Check if user is already logged in on app launch
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      router.replace(session ? '/(main)' : '/loginPage');
+    });
+
+    // Listen for login/logout events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      router.replace(session ? '/(main)' : '/loginPage');
+    });
+
+    // Cleanup listener when component unmounts
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return <Slot />;
 }

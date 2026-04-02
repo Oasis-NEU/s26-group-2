@@ -22,20 +22,24 @@ export default function ProfileScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.basicInfoCard}>
-              <TouchableOpacity style={styles.ppfButton}>
-                <View style={styles.ppf}>
+            {/* Header */}
+            <View style={styles.header}>
+              <View>
+                <Text style={styles.headerEyebrow}>Welcome!</Text>
+                <Text style={styles.headerTitle}>{username}</Text>
               </View>
+              <TouchableOpacity style={styles.bellButton}>
+                <Text style={{ fontSize: 20 }}>⚙️</Text>
               </TouchableOpacity>
-              <Text style={styles.basicInfoText}>{username}</Text>
             </View>
+    
+            <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.settingButton}>
-              <View style={styles.setting}>
-              <Text style={styles.text}>setting</Text>
-            </View>
+            <TouchableOpacity style={styles.ppf}>
+              <View></View>
             </TouchableOpacity>
-
+                    
+            
             <View style={styles.journalCard}>
               <Text style={styles.text}>Journal</Text>
               <View style={styles.journalTracker}>
@@ -89,7 +93,7 @@ export default function ProfileScreen() {
             </View>
             <TouchableOpacity style={styles.logInButton}>
               <View style={styles.setting}>
-                <Text style={styles.text}>Log out/ log In</Text>
+                <Text style={styles.text}>Log out</Text>
               </View>
             </TouchableOpacity>
             
@@ -109,34 +113,54 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#E8F1F8',
+    backgroundColor: '#F4F8FB',
   },
-  basicInfoCard: {
+  header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#D4E6F1',
-    height: 100,
-    width: 'auto',
-    padding: 24,
-    borderWidth: 1,
-    borderColor: '#e6eaed',
-    borderRadius: 22,
-    },
-  basicInfoText: {
-    fontSize: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  headerEyebrow: {
+    fontSize: 13,
+    color: '#7FB3D3',
     fontWeight: '500',
-    color: '#5B7FA5',
-    right: -50
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A3A52',
+    letterSpacing: -0.5,
+  },
+  bellButton: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 10,
+    shadowColor: '#1A5276',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+
+  divider: { height: 1, backgroundColor: '#DDE8F0', marginBottom: 20 },
+
   ppf: {
-    backgroundColor: 'rgb(54, 52, 53)',
-    height: 65,
-    width: 65,
-    borderRadius: 50,
+    backgroundColor: 'rgb(71, 74, 74)',
+    marginBottom: 35,
+    alignSelf: "center",
+    height: 120,
+    width: 120,
+    borderColor: "#dcdcdc",
+    borderWidth: 5,
+    borderRadius: "100%",
+    
   },
-  ppfButton: {padding: 1},
   setting: {
-    backgroundColor: '#D4E6F1',
+    backgroundColor: '#fff',
     width: 'auto',
     padding: 20,
     borderWidth: 1,
@@ -151,7 +175,7 @@ const styles = StyleSheet.create({
   },
   settingButton: {padding: 1},
   journalCard: {
-    backgroundColor: '#D4E6F1',
+    backgroundColor: '#fff',
     height: 160,
     width: 'auto',
     padding: 20,
@@ -161,7 +185,7 @@ const styles = StyleSheet.create({
   },
   journalTracker: {
     flexDirection: 'row',
-    backgroundColor: '#D4E6F1',
+    backgroundColor: '#fff',
     height: 110,
     width: 320,
     alignItems: 'center',
@@ -189,7 +213,7 @@ const styles = StyleSheet.create({
   },
   weekButton: {padding: 1},
   MoodChart: {
-    backgroundColor: '#D4E6F1',
+    backgroundColor: '#fff',
     height: 180,
     width: 'auto',
     padding: 15,
