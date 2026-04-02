@@ -34,7 +34,8 @@ export default function LoginScreen() {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         Alert.alert('Almost there! 🌿', 'Check your email to confirm your account.');
-      } else {
+      } 
+      else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         router.replace('./(main)/index');
@@ -210,10 +211,10 @@ const styles = StyleSheet.create({
     backgroundColor: CARD_BG,
     borderRadius: 24,
     padding: 28,
-    // shadowColor: '#000',
-    // shadowOpacity: 0.06,
-    // shadowRadius: 20,
-    // shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
 
@@ -233,10 +234,10 @@ const styles = StyleSheet.create({
   },
   tabActive: {
     backgroundColor: CARD_BG,
-    // shadowColor: '#000',
-    // shadowOpacity: 0.08,
-    // shadowRadius: 6,
-    // shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
   tabText: {
@@ -287,10 +288,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     marginBottom: 18,
-    // shadowColor: TEAL,
-    // shadowOpacity: 0.3,
-    // shadowRadius: 8,
-    // shadowOffset: { width: 0, height: 4 },
+    shadowColor: TEAL,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
   buttonText: {
