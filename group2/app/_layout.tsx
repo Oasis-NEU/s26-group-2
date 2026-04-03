@@ -8,13 +8,13 @@ export default function RootLayout() {
   useEffect(() => {
     // Check if user is already logged in on app launch
     supabase.auth.getSession().then(({ data: { session } }) => {
-      router.replace(session? '/(main)' : './index');
+      router.replace(session? '/(main)' : '/loginPage');
     });
 
     // Listen for login/logout events
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN') {
-      router.replace(session ? '/(main)' : './index');}
+      router.replace('/(main)');}
     else if (event === 'SIGNED_OUT') {
       router.replace('/loginPage');}
   });
