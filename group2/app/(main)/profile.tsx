@@ -71,11 +71,6 @@ export default function ProfileScreen() {
         .eq('user_id', user.id)
         .in('entry_date', weekDates);
 
-      if (error) {
-        console.error('Load error:', error.message);
-        return;
-      }
-
       const mapped: JournalEntry[] = weekDates.map(date => {
         const found = data?.find(e => e.entry_date === date);
         return found
@@ -97,15 +92,40 @@ export default function ProfileScreen() {
   };
 
   const handleSaveUsername = async () => {
-    if (!draftName.trim()) return;
-    const { error } = await supabase.auth.updateUser({ data: { username: draftName } });
-    if (error) {
-      Alert.alert('Error', error.message);
-    } else {
-      setUsername(draftName);
-      setEditModalVisible(false);
-    }
-  };
+  if (!draftName.trim() || draftName.length < 3) {
+    Alert.alert('Invalid username', 'Username must be at least 3 characters.');
+    return;
+  }
+
+  // 1. Update auth metadata
+  const { error: authError } = await supabase.auth.updateUser({
+    data: { username: draftName },
+  });
+  if (authError) {
+    Alert.alert('Error', authError.message);
+    return;
+  }
+
+  // 2. Update profiles table directly
+  const { data: { user } } = await supabase.auth.getUser();
+  const { error: dbError } = await supabase
+    .from('profiles')
+    .update({ username: draftName, updated_at: new Date().toISOString(), email: email })
+    .eq('id', user?.id);
+  if (dbError) {
+    Alert.alert('Error', dbError.message);
+    return;
+  }
+  //update username and email to journal entries database
+  const { error: journalError } = await supabase
+    .from('journal_entries')
+    .update({ username: draftName, email: email })
+    .eq('user_id', user!.id);
+  if (journalError) { Alert.alert('Error', journalError.message); return; }
+
+  setUsername(draftName);
+  setEditModalVisible(false);
+};
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -349,7 +369,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: { fontSize: 18, fontWeight: '700', color: '#1A3A52', marginBottom: 16 },
   modalInput: {
-    width: '100%', backgroundColor: '#EBF5FB', borderRadius: 12,
+    width: 180, backgroundColor: '#EBF5FB', borderRadius: 12,
     padding: 14, fontSize: 15, color: '#2C3E50',
     borderWidth: 1, borderColor: '#AED6F1', marginBottom: 4,
   },

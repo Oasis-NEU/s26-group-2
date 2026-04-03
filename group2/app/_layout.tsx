@@ -8,13 +8,16 @@ export default function RootLayout() {
   useEffect(() => {
     // Check if user is already logged in on app launch
     supabase.auth.getSession().then(({ data: { session } }) => {
-      router.replace(session ? '/(main)' : '/loginPage');
+      router.replace(session? '/(main)' : './index');
     });
 
     // Listen for login/logout events
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      router.replace(session ? '/(main)' : '/loginPage');
-    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+      router.replace(session ? '/(main)' : './index');}
+    else if (event === 'SIGNED_OUT') {
+      router.replace('/loginPage');}
+  });
 
     // Cleanup listener when component unmounts
     return () => subscription.unsubscribe();

@@ -1,7 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { router } from 'expo-router';
-import { Alert,
+import {
+  Alert,
   KeyboardAvoidingView,
   Linking,
   Modal,
@@ -16,7 +17,7 @@ import { Alert,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import{ supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const MOODS = [
@@ -68,7 +69,20 @@ export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [journalText, setJournalText] = useState('');
   const [pendingMood, setPendingMood] = useState<number | null>(null);
-  const [usernameHeader, setUsernameHeader] = useState<string>("")
+  const [usernameHeader, setUsernameHeader] = useState<string>('');
+
+  useFocusEffect(
+  useCallback(() => {
+    const fetchUsername = async () => {
+      await supabase.auth.refreshSession(); 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUsernameHeader(user.user_metadata?.username || user.email);
+      }
+    };
+    fetchUsername();
+    }, [])
+  );
 
   const handleMoodPress = (index: number) => {
     setPendingMood(index);
@@ -76,68 +90,50 @@ export default function HomeScreen() {
     setModalVisible(true);
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        // Use custom username if set, otherwise fall back to email
-        if (user.user_metadata?.username) {
-          const name = user.user_metadata?.username || '';
-          setUsernameHeader(name);
-        }
-        else { const name = user.email || '';
-                setUsernameHeader(name)} 
-      }
-    };
-    fetchUser();
-  }, []);
-
   const handleSave = async () => {
-  if (pendingMood === null) return;
+    if (pendingMood === null) return;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    Alert.alert('Not logged in', 'No user found');
-    return;
-  }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      Alert.alert('Not logged in', 'No user found');
+      return;
+    }
 
-  // Use local date, NOT UTC (fixes timezone mismatch)
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-  const mood = MOODS[pendingMood];
+    const mood = MOODS[pendingMood];
 
-  console.log('Saving entry:', { user_id: user.id, today, mood });
+    console.log('Saving entry:', { user_id: user.id, today, mood });
 
-  const { error } = await supabase
-    .from('journal_entries')
-    .upsert(
-      {
-        user_id: user.id,
-        entry_date: today,
-        mood_index: pendingMood,
-        mood_emoji: mood.emoji,
-        journal_text: journalText,
-      },
-      { onConflict: 'user_id,entry_date' }
-    );
+    const { error } = await supabase
+      .from('journal_entries')
+      .upsert(
+        {
+          user_id: user.id,
+          entry_date: today,
+          mood_index: pendingMood,
+          mood_emoji: mood.emoji,
+          journal_text: journalText,
+        },
+        { onConflict: 'user_id,entry_date' }
+      );
 
-  if (error) {
-    Alert.alert('Save failed', error.message); // ← will show if table missing/RLS blocking
-    console.error('Supabase error:', error);
-    return;
-  }
+    if (error) {
+      Alert.alert('Save failed', error.message);
+      console.error('Supabase error:', error);
+      return;
+    }
 
-  Alert.alert('Saved! ✅', `Mood: ${mood.emoji} for ${today}`); // ← confirm it worked
-  setSelectedMood(pendingMood);
-  setModalVisible(false);
-};
+    Alert.alert('Saved! ✅', `Mood: ${mood.emoji} for ${today}`);
+    setSelectedMood(pendingMood);
+    setModalVisible(false);
+  };
 
   const handleClose = () => {
     setModalVisible(false);
     setPendingMood(null);
   };
-    
 
   return (
     <SafeAreaView style={styles.container}>

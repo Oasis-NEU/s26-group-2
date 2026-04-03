@@ -22,6 +22,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -31,16 +32,41 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({ email, password });
+        if (!email || email.length < 3) {
+          Alert.alert('Invalid Email', "Please enters a valid email address");
+          return;
+        }
+        const { error } = await supabase.auth.signUp({ email, password },);
         if (error) throw error;
-        Alert.alert('Almost there! 🌿', 'Check your email to confirm your account.');
+        router.replace('./(main)/index')
+        // Alert.alert('Almost there! 🌿', 'Check your email to confirm your account.');
+        // 1. Update auth metadata
+          const { error: authError } = await supabase.auth.updateUser({
+            data: { email: email },
+          });
+          if (authError) {
+            Alert.alert('Error', authError.message);
+            return;
+          }
+
+          // 2. Update profiles table directly
+          const { data: { user } } = await supabase.auth.getUser();
+          const { error: dbError } = await supabase
+            .from('profiles')
+            .update({ updated_at: new Date().toISOString(), email: email })
+            .eq('id', user?.id);
+          if (dbError) {
+            Alert.alert('Error', dbError.message);
+            return;
+          }
       } 
       else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email, password },);
         if (error) throw error;
         router.replace('./(main)/index');
       }
-    } catch (err: any) {
+    } 
+    catch (err: any) {
       Alert.alert('Oops', err.message);
     } finally {
       setLoading(false);
