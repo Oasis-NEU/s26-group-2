@@ -229,7 +229,10 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={i}
               style={styles.categoryCard}
-              onPress={() => cat.label === 'Games' && router.push('/explore')}
+              onPress={() => {
+                if (cat.label === 'Games') router.push('/explore');
+                if (cat.label === 'Resources') router.push('/resources');
+              }}
             >
               <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
               <Text style={styles.categoryLabel}>{cat.label}</Text>
