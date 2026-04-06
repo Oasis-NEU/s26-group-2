@@ -1,11 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
-
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return (
-    <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.4 }}>{emoji}</Text>
-  );
-}
+import { HomeTabIcon, ExploreTabIcon, ChatTabIcon, ProfileTabIcon, ResourcesTabIcon } from '@/components/serenity-icons';
 
 export default function TabLayout() {
   return (
@@ -31,28 +25,35 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
+          tabBarIcon: ({ color }) => <HomeTabIcon size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} />,
+          tabBarIcon: ({ color }) => <ExploreTabIcon size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
           title: 'Chat',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="💬" focused={focused} />,
+          tabBarIcon: ({ color }) => <ChatTabIcon size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="resources"
+        options={{
+          title: 'Resources',
+          tabBarIcon: ({ color }) => <ResourcesTabIcon size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
+          tabBarIcon: ({ color }) => <ProfileTabIcon size={24} color={color} />,
         }}
       />
     </Tabs>
