@@ -1,50 +1,43 @@
-# Welcome to your Expo app 👋
+# Serenity 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A wellness iOS app built with Expo React Native (TypeScript/JavaScript), designed for college students recovering from PTSD and trauma.
 
-## Get started
+Built by Oasis @ Northeastern — Spring 2026.
+
+## Features
+
+- **Homepage** — Mood tracker, curated mental health articles, and quick access to all tabs
+- **Daily Journal** — A private space to log thoughts and feelings over time
+- **Seren** — An AI-powered wellness companion for guided support and mindful conversation
+- **Explore** — Tetris mini-game for mental reset, backed by research on PTSD symptom relief
+- **Profile** — Personalized space to view progress and manage account settings
+
+## Get Started
 
 1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
 ```bash
-npm run reset-project
+   npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Start the app
+```bash
+   npx expo start
+```
 
-## Learn more
+3. Open in Expo Go on your iOS device or iOS simulator
 
-To learn more about developing your project with Expo, look at the following resources:
+## Tech Stack
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Expo React Native
+- TypeScript / JavaScript
+- expo-font
+- react-native-webview
 
-## Join the community
+## Environment Variables
 
-Join our community of developers creating universal apps.
+This project uses a `.env` file for sensitive keys. Create a `.env` file in the root directory — do not commit it.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Learn More
+
+- [Expo documentation](https://docs.expo.dev/)
+- [Oasis @ Northeastern](https://oasisneu.com)
